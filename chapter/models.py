@@ -4,8 +4,6 @@ from django.db import models
 Definition of models.
 """
 
-from django.db import models
-
 
 class Chapter(models.Model):
     CHAPTER_CHOICES = (('1', 'Alpha'),
@@ -18,10 +16,12 @@ class Chapter(models.Model):
                        ('8', 'Nu'),
                        ('9', 'Omega'),
                        ('10', 'Alpha-Alpha'))
-    name = models.CharField(max_length=20, choices=CHAPTER_CHOICES, default="N/A")
-    status = models.CharField(max_length=20, help_text="chapter")
+    name = models.CharField(
+        max_length=20, choices=CHAPTER_CHOICES)
+    status = models.CharField(max_length=20)
     school = models.CharField(max_length=50)
-    contact_info = models.OneToOneField('ContactInformation', on_delete=models.CASCADE)
+    contact_info = models.OneToOneField(
+        'ContactInformation', on_delete=models.CASCADE)
 
 
 class Member(models.Model):
@@ -38,20 +38,20 @@ class Member(models.Model):
                             ('11', 'Pledge-Education-Chair'))
     first_name = models.CharField(max_length=20, help_text="Enter first name")
     sir_name = models.CharField(max_length=20, help_text="Enter last name")
-    relationship = models.CharField(max_length=25, choices=RELATIONSHIP_CHOICES)
+    relationship = models.CharField(
+        max_length=25, choices=RELATIONSHIP_CHOICES)
     chapter = models.OneToOneField('Chapter', on_delete=models.CASCADE)
     church = models.OneToOneField('MemberChurch', on_delete=models.CASCADE)
-    contact_info = models.OneToOneField('ContactInformation', on_delete=models.CASCADE)
+    contact_info = models.OneToOneField(
+        'ContactInformation', on_delete=models.CASCADE)
 
-
-class MemberActivation(models.Model):
     STATUS_CHOICES = (('1', 'Active'),
                       ('2', 'Inactive'),
                       ('3', 'Alumni'))
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="N/A")
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES)
     activation_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     submitted_date = models.DateTimeField(auto_now=False, auto_now_add=True)
-    member = models.OneToOneField('Member', on_delete=models.CASCADE)
 
 
 class MemberChurch(models.Model):
@@ -60,10 +60,12 @@ class MemberChurch(models.Model):
                      ('3', 'NALC'),
                      ('4', 'WELS'),
                      ('5', 'OTHER'))
-    name = models.CharField(max_length=50, default="N/A")
-    pastor = models.CharField(max_length=50, default="N/A")
-    synod = models.CharField(max_length=5, choices=SYNOD_CHOICES, default="N/A")
-    contact_info = models.OneToOneField('ContactInformation', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    pastor = models.CharField(max_length=50)
+    synod = models.CharField(
+        max_length=5, choices=SYNOD_CHOICES)
+    contact_info = models.OneToOneField(
+        'ContactInformation', on_delete=models.CASCADE)
 
 
 class ContactInformation(models.Model):
