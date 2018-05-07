@@ -23,6 +23,9 @@ class Chapter(models.Model):
     contact_info = models.OneToOneField(
         'ContactInformation', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.name
+
 
 class Member(models.Model):
     RELATIONSHIP_CHOICES = (('1', 'Brother'),
@@ -53,6 +56,9 @@ class Member(models.Model):
     activation_date = models.DateTimeField(auto_now=False, auto_now_add=False)
     submitted_date = models.DateTimeField(auto_now=False, auto_now_add=True)
 
+    def __str__(self):
+        return self.first_name + ' ' + self.sir_name
+
 
 class MemberChurch(models.Model):
     SYNOD_CHOICES = (('1', 'LCMS'),
@@ -66,6 +72,9 @@ class MemberChurch(models.Model):
         max_length=5, choices=SYNOD_CHOICES)
     contact_info = models.OneToOneField(
         'ContactInformation', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 class ContactInformation(models.Model):
