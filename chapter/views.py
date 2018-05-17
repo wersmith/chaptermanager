@@ -9,8 +9,13 @@ from .models import ContactInformation
 
 
 def chapter(request):
-    chapters = Chapter.objects.order_by('id')
-    result = ', '.join([c.get_name_display() for c in chapters])
+    try:
+        chapters = Chapter.objects.order_by('id')
+        context = {'chapter_list' : chapters}
+        return render(request, 'chapter/chapter_index.html', context)
+        #result = ', '.join([c.get_name_display() for c in chapters])
+    except:
+        raise Http404('No Chapters to show')
     return HttpResponse(result)
 
 
