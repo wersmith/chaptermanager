@@ -1,8 +1,8 @@
-from django.db import models
-
 """
 Definition of models.
 """
+from django.db import models
+from django.core.validators import RegexValidator
 
 
 class Chapter(models.Model):
@@ -16,6 +16,7 @@ class Chapter(models.Model):
                        ('8', 'Nu'),
                        ('9', 'Omega'),
                        ('10', 'Alpha-Alpha'))
+
     name = models.CharField(
         max_length=20, choices=CHAPTER_CHOICES)
     status = models.CharField(max_length=20)
@@ -24,7 +25,7 @@ class Chapter(models.Model):
         'ContactInformation', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.get_name_display() + ' ' + self.school
 
 
 class Member(models.Model):
@@ -43,8 +44,8 @@ class Member(models.Model):
     sir_name = models.CharField(max_length=20, help_text="Enter last name")
     relationship = models.CharField(
         max_length=25, choices=RELATIONSHIP_CHOICES)
-    chapter = models.OneToOneField('Chapter', on_delete=models.CASCADE)
-    church = models.OneToOneField('MemberChurch', on_delete=models.CASCADE)
+    chapter = models.ForeignKey('Chapter', on_delete=models.DO_NOTHING)
+    church = models.ForeignKey('MemberChurch', on_delete=models.DO_NOTHING)
     contact_info = models.OneToOneField(
         'ContactInformation', on_delete=models.CASCADE)
 
@@ -58,6 +59,31 @@ class Member(models.Model):
 
     def __str__(self):
         return self.first_name + ' ' + self.sir_name
+
+    @staticmethod
+    def _bootstrap(count=500, local='en'):
+        from mimesis import Person, Datetime
+        import random
+
+        person = Person(local)
+        date = Datetime(local)
+        chapters = Chapter.objects.all()
+        churches = MemberChurch.objects.all()
+        contact = ContactInformation.objects.all()
+
+        for _ in range(count):
+            member = Member(
+                first_name=person.name(),
+                sir_name=person.surname(),
+                relationship=random.choice(Member.RELATIONSHIP_CHOICES),
+                chapter=random.choice(chapters),
+                church=random.choice(churches),
+                contact_info=random.choice(contact),
+                status=random.choice(Member.STATUS_CHOICES),
+                activation_date=date.datetime(), # Time Zone problem when creating 
+                submitted_date=date.datetime()
+            )
+            member.save()
 
 
 class MemberChurch(models.Model):
@@ -74,13 +100,57 @@ class MemberChurch(models.Model):
         'ContactInformation', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.name + ' ' + self.get_synod_display()
+
+    @staticmethod
+    def _bootstrap(count=50, local='en'):
+        from mimesis import Person, Business
+        import random
+        business = Business(local)
+        person = Person(local)
+        contact = ContactInformation.objects.all()
+
+        for _ in range(count):
+            try:
+                church = MemberChurch(
+                    name=business.company(),
+                    pastor=person.full_name(),
+                    synod=random.choice(MemberChurch.SYNOD_CHOICES),
+                    contact_info=random.choice(contact)
+                )
+                church.save()
+            except:
+                continue
 
 
 class ContactInformation(models.Model):
     street_name = models.CharField(max_length=50)
     street_number = models.IntegerField()
-    zip_Code = models.IntegerField()
+    zip_code = models.IntegerField()
     state = models.CharField(max_length=2)
-    phone = models.IntegerField(default=0)
+    phone_regex = RegexValidator(
+        regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone_number = models.CharField(
+        validators=[phone_regex], max_length=17, blank=True)
     email = models.EmailField()
+
+    def __str__(self):
+        return str(self.street_number) + ' ' + self.street_name + ' ' + self.state
+
+    @staticmethod
+    def _bootstrap(count=500, locale='en'):
+        from mimesis import Person, Address
+        person = Person(locale)
+        address = Address(locale)
+
+        for _ in range(count):
+            contact = ContactInformation(
+                street_name=address.street_name(),
+                street_number=address.street_number(),
+                zip_code=address.zip_code(),
+                state=address.state(),
+                email=person.email(),
+                phone_number=person.telephone()
+            )
+
+            contact.save()

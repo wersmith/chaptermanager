@@ -9,6 +9,8 @@ urlpatterns = [
     # chapter/3/contact
     path('<int:chapter_id>/contact/',
          views.chapter_contact, name='chapter_contact'),
+    # chapter/<id>/member
+    path('<int:chapter_id>/member/', views.chapter_members, name='chapter_members'),
     # chapter/member/
     path('member/', views.member, name='member'),
     # chapter/member/2
