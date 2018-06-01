@@ -1,4 +1,4 @@
-"""chapterManager URL Configuration
+"""chaptermanager URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
@@ -14,14 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from django.conf.urls import include
-from django.views.generic import RedirectView
-from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('chapter/', include('chapter.urls')),
-    path('', RedirectView.as_view(url='/chapter/', permanent=True)),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('admin/', admin.site.urls),
+]

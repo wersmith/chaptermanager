@@ -1,0 +1,15 @@
+{% if chapter_list %}
+    <ul>
+        {% for chapter in chapter_list %}
+        <li>
+            <a href="/chapter/{{ chapter.id }}/">
+                {{ chapter.get_name_display }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>
+        No chapters to list.
+    </p>
+{% endif %}
