@@ -27,6 +27,22 @@ class Chapter(models.Model):
     def __str__(self):
         return self.get_name_display() + ' ' + self.school
 
+    @staticmethod
+    def _bootstrap(count=25, local='en'):
+        from mimesis import Business
+        import random
+
+        business = Business(local)
+        contacts = ContactInformation.objects.all()
+
+        for _ in range(count):
+            chapter = Chapter(
+                name = random.choice(Chapter.CHAPTER_CHOICES),
+                status = "status",
+                school = business,
+                contact_info = random.choice(contacts)
+            )
+            chapter.save()
 
 class Member(models.Model):
     RELATIONSHIP_CHOICES = (('1', 'Brother'),
@@ -72,19 +88,21 @@ class Member(models.Model):
         contact = ContactInformation.objects.all()
 
         for _ in range(count):
-            member = Member(
-                first_name=person.name(),
-                sir_name=person.surname(),
-                relationship=random.choice(Member.RELATIONSHIP_CHOICES),
-                chapter=random.choice(chapters),
-                church=random.choice(churches),
-                contact_info=random.choice(contact),
-                status=random.choice(Member.STATUS_CHOICES),
-                activation_date=date.datetime(), # Time Zone problem when creating 
-                submitted_date=date.datetime()
-            )
-            member.save()
-
+            try:
+                member = Member(
+                    first_name=person.name(),
+                    sir_name=person.surname(),
+                    relationship=random.choice(Member.RELATIONSHIP_CHOICES),
+                    chapter=random.choice(chapters),
+                    church=random.choice(churches),
+                    contact_info=random.choice(contact),
+                    status=random.choice(Member.STATUS_CHOICES),
+                    activation_date=date.datetime(), # Time Zone problem when creating 
+                    submitted_date=date.datetime()
+                )
+                member.save()
+            except:
+                continue
 
 class MemberChurch(models.Model):
     SYNOD_CHOICES = (('1', 'LCMS'),
