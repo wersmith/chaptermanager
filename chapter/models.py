@@ -36,13 +36,16 @@ class Chapter(models.Model):
         contacts = ContactInformation.objects.all()
 
         for _ in range(count):
-            chapter = Chapter(
-                name = random.choice(Chapter.CHAPTER_CHOICES),
-                status = "status",
-                school = business,
-                contact_info = random.choice(contacts)
-            )
-            chapter.save()
+            try:
+                chapter = Chapter(
+                    name = random.choice(Chapter.CHAPTER_CHOICES),
+                    status = "status",
+                    school = business,
+                    contact_info = random.choice(contacts)
+                )
+                chapter.save()
+            except:
+                continue
 
 class Member(models.Model):
     RELATIONSHIP_CHOICES = (('1', 'Brother'),
